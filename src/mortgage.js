@@ -11,11 +11,18 @@ export function calculateMortgage(principal, annualRate, years, escrow = 0) {
 
   const interest = principal * monthlyRate;
   const principalPayment = principalAndInterest - interest;
+  const lastPrincipalPayment =
+    monthlyRate === 0
+      ? principalAndInterest
+      : principalAndInterest / (1 + monthlyRate);
+  const lastInterest = principalAndInterest - lastPrincipalPayment;
 
   return {
     principalAndInterest,
     principalPayment,
     interest,
+    lastPrincipalPayment,
+    lastInterest,
     escrow,
     totalPayment: principalAndInterest + escrow,
     totalInterest: principalAndInterest * numberOfPayments - principal,

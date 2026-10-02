@@ -31,10 +31,10 @@ function NumberField({ label, value, onInput, prefix, suffix, min = 0, step }) {
 }
 
 function App() {
-  const [principal, setPrincipal] = useState("114394.39");
+  const [principal, setPrincipal] = useState("100000");
   const [annualRate, setAnnualRate] = useState("2.5");
   const [years, setYears] = useState(10);
-  const [escrow, setEscrow] = useState("524.21");
+  const [escrow, setEscrow] = useState("500");
 
   const values = {
     principal: Math.max(0, Number(principal) || 0),
@@ -145,12 +145,16 @@ function App() {
               <p class="text-uppercase text-primary fw-bold small mb-2">
                 Payment breakdown
               </p>
-              <h2 class="h3 mb-4">Your first monthly payment</h2>
+              <h2 class="h3 mb-2">First payment vs. last payment</h2>
+              <p class="text-body-secondary mb-4">
+                Your principal and interest payment stays fixed, but its
+                allocation changes over the life of the loan.
+              </p>
 
               <div
                 class="progress mb-4"
                 role="img"
-                aria-label="Payment distribution"
+                aria-label="First payment distribution"
               >
                 <div
                   class="progress-bar bg-primary"
@@ -166,49 +170,60 @@ function App() {
                 />
               </div>
 
-              <dl class="list-group list-group-flush mb-0">
-                <div class="list-group-item d-flex justify-content-between px-0">
-                  <dt>Principal</dt>
-                  <dd class="mb-0">
-                    <strong>
-                      {currency.format(payment.principalPayment)}
-                    </strong>{" "}
-                    <span class="text-body-secondary ms-2">
-                      {shareOfTotal(payment.principalPayment)}
-                    </span>
-                  </dd>
-                </div>
-                <div class="list-group-item d-flex justify-content-between px-0">
-                  <dt>Interest</dt>
-                  <dd class="mb-0">
-                    <strong>{currency.format(payment.interest)}</strong>{" "}
-                    <span class="text-body-secondary ms-2">
-                      {shareOfTotal(payment.interest)}
-                    </span>
-                  </dd>
-                </div>
-                <div class="list-group-item d-flex justify-content-between px-0">
-                  <dt>Escrow</dt>
-                  <dd class="mb-0">
-                    <strong>{currency.format(payment.escrow)}</strong>{" "}
-                    <span class="text-body-secondary ms-2">
-                      {shareOfTotal(payment.escrow)}
-                    </span>
-                  </dd>
-                </div>
-                <div class="list-group-item d-flex justify-content-between px-0">
-                  <dt>Principal &amp; interest</dt>
-                  <dd class="mb-0 fw-bold">
-                    {currency.format(payment.principalAndInterest)}
-                  </dd>
-                </div>
-                <div class="list-group-item d-flex justify-content-between bg-primary text-white rounded px-3 mt-3">
-                  <dt>Total payment</dt>
-                  <dd class="mb-0 fw-bold fs-5">
-                    {currency.format(payment.totalPayment)}
-                  </dd>
-                </div>
-              </dl>
+              <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                  <thead>
+                    <tr>
+                      <th scope="col">Component</th>
+                      <th scope="col" class="text-end">First month</th>
+                      <th scope="col" class="text-end">Last month</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">Principal</th>
+                      <td class="text-end">
+                        {currency.format(payment.principalPayment)}
+                      </td>
+                      <td class="text-end">
+                        {currency.format(payment.lastPrincipalPayment)}
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Interest</th>
+                      <td class="text-end">
+                        {currency.format(payment.interest)}
+                      </td>
+                      <td class="text-end">
+                        {currency.format(payment.lastInterest)}
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Escrow</th>
+                      <td class="text-end">{currency.format(payment.escrow)}</td>
+                      <td class="text-end">{currency.format(payment.escrow)}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Principal &amp; interest</th>
+                      <td class="text-end fw-bold">
+                        {currency.format(payment.principalAndInterest)}
+                      </td>
+                      <td class="text-end fw-bold">
+                        {currency.format(payment.principalAndInterest)}
+                      </td>
+                    </tr>
+                    <tr class="table-primary">
+                      <th scope="row">Total payment</th>
+                      <td class="text-end fw-bold">
+                        {currency.format(payment.totalPayment)}
+                      </td>
+                      <td class="text-end fw-bold">
+                        {currency.format(payment.totalPayment)}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>

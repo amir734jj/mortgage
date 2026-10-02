@@ -96,6 +96,34 @@ function App() {
     total > 0
       ? `${((amount / total) * 100).toFixed(1)}%`
       : "0.0%";
+  const monthlyRate = values.annualRate / 100 / 12;
+  const displayedMonthlyRate =
+    monthlyRate.toFixed(8).replace(/0+$/, "").replace(/\.$/, "") || "0";
+  const valueFormula =
+    monthlyRate === 0
+      ? `\\begin{aligned}
+          M &= \\frac{${values.originalPrincipal.toFixed(2)}}{${payment.numberOfPayments}}
+             = \\$${payment.principalAndInterest.toFixed(2)} \\\\
+          I_1 &= ${values.currentPrincipal.toFixed(2)} \\times 0
+              = \\$${payment.interest.toFixed(2)} \\\\
+          Principal_1 &= \\$${payment.principalAndInterest.toFixed(2)}
+                         - \\$${payment.interest.toFixed(2)}
+                       = \\$${payment.principalPayment.toFixed(2)}
+        \\end{aligned}`
+      : `\\begin{aligned}
+          r &= \\frac{${values.annualRate}}{100 \\times 12}
+             = ${displayedMonthlyRate} \\\\
+          M &= ${values.originalPrincipal.toFixed(2)}
+               \\times \\frac{${displayedMonthlyRate}(1+${displayedMonthlyRate})^{${payment.numberOfPayments}}}
+               {(1+${displayedMonthlyRate})^{${payment.numberOfPayments}}-1}
+             = \\$${payment.principalAndInterest.toFixed(2)} \\\\
+          I_1 &= ${values.currentPrincipal.toFixed(2)}
+                 \\times ${displayedMonthlyRate}
+              = \\$${payment.interest.toFixed(2)} \\\\
+          Principal_1 &= \\$${payment.principalAndInterest.toFixed(2)}
+                         - \\$${payment.interest.toFixed(2)}
+                       = \\$${payment.principalPayment.toFixed(2)}
+        \\end{aligned}`;
 
   return (
     <main class="container py-5">
@@ -288,6 +316,9 @@ function App() {
                     Principal_t &: \\text{principal paid in month } t
                   \\end{aligned}`}
                 </MathFormula>
+                <hr class="border-primary opacity-25" />
+                <p class="fw-bold mb-2">Using your values</p>
+                <MathFormula>{valueFormula}</MathFormula>
               </div>
             </div>
           </div>

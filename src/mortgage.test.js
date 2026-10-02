@@ -49,6 +49,16 @@ test("calculates the final month's principal and interest split", () => {
   );
 });
 
+test("matches the statement payment using the original loan and current balance", () => {
+  const result = calculateMortgage(188200, 2.5, 15, 524.21, 114394.39);
+
+  assert.equal(result.principalAndInterest.toFixed(2), "1254.90");
+  assert.equal(result.interest.toFixed(2), "238.32");
+  assert.equal(result.principalPayment.toFixed(2), "1016.58");
+  assert.equal(result.totalPayment.toFixed(2), "1779.11");
+  assert.ok(result.projectedPayments < result.numberOfPayments);
+});
+
 test("amortizes every available term to a zero balance", () => {
   for (const { years } of termExpectations) {
     const result = calculateMortgage(100000, 2.5, years, 500);

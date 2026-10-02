@@ -61,13 +61,15 @@ function NumberField({ label, value, onInput, prefix, suffix, min = 0, step }) {
 }
 
 function App() {
-  const [principal, setPrincipal] = useState("100000");
+  const [originalPrincipal, setOriginalPrincipal] = useState("188200");
+  const [currentPrincipal, setCurrentPrincipal] = useState("113356.92");
   const [annualRate, setAnnualRate] = useState("2.5");
-  const [years, setYears] = useState(10);
-  const [escrow, setEscrow] = useState("500");
+  const [years, setYears] = useState(15);
+  const [escrow, setEscrow] = useState("524.21");
 
   const values = {
-    principal: Math.max(0, Number(principal) || 0),
+    originalPrincipal: Math.max(0, Number(originalPrincipal) || 0),
+    currentPrincipal: Math.max(0, Number(currentPrincipal) || 0),
     annualRate: Math.max(0, Number(annualRate) || 0),
     escrow: Math.max(0, Number(escrow) || 0),
   };
@@ -75,12 +77,19 @@ function App() {
   const payment = useMemo(
     () =>
       calculateMortgage(
-        values.principal,
+        values.originalPrincipal,
         values.annualRate,
         years,
         values.escrow,
+        values.currentPrincipal,
       ),
-    [values.principal, values.annualRate, values.escrow, years],
+    [
+      values.originalPrincipal,
+      values.currentPrincipal,
+      values.annualRate,
+      values.escrow,
+      years,
+    ],
   );
 
   const shareOfTotal = (amount) =>
@@ -131,9 +140,16 @@ function App() {
               <h2 class="h3 mb-4">Adjust the details</h2>
 
               <NumberField
-                label="Outstanding balance"
-                value={principal}
-                onInput={setPrincipal}
+                label="Original loan amount"
+                value={originalPrincipal}
+                onInput={setOriginalPrincipal}
+                prefix="$"
+                step="100"
+              />
+              <NumberField
+                label="Current outstanding balance"
+                value={currentPrincipal}
+                onInput={setCurrentPrincipal}
                 prefix="$"
                 step="100"
               />
@@ -145,7 +161,7 @@ function App() {
                 step="0.01"
               />
               <label class="form-label d-block mb-3">
-                <span class="d-block fw-semibold mb-2">Loan term</span>
+                <span class="d-block fw-semibold mb-2">Original loan term</span>
                 <select
                   class="form-select"
                   value={years}
@@ -177,8 +193,9 @@ function App() {
               </p>
               <h2 class="h3 mb-2">First payment vs. last payment</h2>
               <p class="text-body-secondary mb-4">
-                Your principal and interest payment stays fixed, but its
-                allocation changes over the life of the loan.
+                The scheduled payment uses your original loan terms. Your
+                current balance determines this month’s interest and principal
+                split.
               </p>
 
               <div
@@ -236,7 +253,7 @@ function App() {
                     <tr>
                       <th scope="row">Principal &amp; interest</th>
                       <td class="text-end fw-bold">
-                        {currency.format(payment.principalAndInterest)}
+                        {currency.format(payment.lastPrincipalAndInterest)}
                       </td>
                       <td class="text-end fw-bold">
                         {currency.format(payment.principalAndInterest)}
@@ -245,7 +262,7 @@ function App() {
                     <tr class="table-primary">
                       <th scope="row">Total payment</th>
                       <td class="text-end fw-bold">
-                        {currency.format(payment.totalPayment)}
+                        {currency.format(payment.lastTotalPayment)}
                       </td>
                       <td class="text-end fw-bold">
                         {currency.format(payment.totalPayment)}
@@ -271,7 +288,7 @@ function App() {
             <div class="col-lg-8">
               <div class="alert alert-primary text-center mb-0 overflow-auto">
                 <MathFormula>
-                  {`M = P \\times \\frac{r(1+r)^{${payment.numberOfPayments}}}{(1+r)^{${payment.numberOfPayments}}-1}`}
+                  {`M = P_0 \\times \\frac{r(1+r)^{${payment.numberOfPayments}}}{(1+r)^{${payment.numberOfPayments}}-1}, \\quad I_t = B_t \\times r, \\quad Principal_t = M - I_t`}
                 </MathFormula>
               </div>
             </div>

@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import { calculateMortgage } from "./mortgage.js";
+import "./styles.css";
 
 const TERMS = [10, 15, 20, 30];
 const currency = new Intl.NumberFormat("en-US", {
@@ -37,7 +38,7 @@ function MathFormula({ children }) {
     return () => script?.removeEventListener("load", typeset);
   }, [children]);
 
-  return <div ref={container} />;
+  return <div class="math-formula" ref={container} />;
 }
 
 function NumberField({ label, value, onInput, prefix, suffix, min = 0, step }) {
@@ -99,6 +100,8 @@ function App() {
   const monthlyRate = values.annualRate / 100 / 12;
   const displayedMonthlyRate =
     monthlyRate.toFixed(8).replace(/0+$/, "").replace(/\.$/, "") || "0";
+  const compoundingFactor = (1 + monthlyRate) ** payment.numberOfPayments;
+  const displayedCompoundingFactor = compoundingFactor.toFixed(6);
   const valueFormula =
     monthlyRate === 0
       ? `\\begin{aligned}
@@ -113,10 +116,12 @@ function App() {
       : `\\begin{aligned}
           r &= \\frac{${values.annualRate}}{100 \\times 12}
              = ${displayedMonthlyRate} \\\\
+          A &= (1+${displayedMonthlyRate})^{${payment.numberOfPayments}}
+             = ${displayedCompoundingFactor} \\\\
           M &= ${values.originalPrincipal.toFixed(2)}
-               \\times \\frac{${displayedMonthlyRate}(1+${displayedMonthlyRate})^{${payment.numberOfPayments}}}
-               {(1+${displayedMonthlyRate})^{${payment.numberOfPayments}}-1}
-             = \\$${payment.principalAndInterest.toFixed(2)} \\\\
+               \\times \\frac{${displayedMonthlyRate} \\times ${displayedCompoundingFactor}}
+               {${displayedCompoundingFactor}-1} \\\\
+            &= \\$${payment.principalAndInterest.toFixed(2)} \\\\
           I_1 &= ${values.currentPrincipal.toFixed(2)}
                  \\times ${displayedMonthlyRate}
               = \\$${payment.interest.toFixed(2)} \\\\
@@ -301,17 +306,18 @@ function App() {
               <h2 class="h3 mb-0">The fixed-rate formula</h2>
             </div>
             <div class="col-lg-8">
-              <div class="alert alert-primary text-center mb-0 overflow-auto">
+              <div class="formula-panel alert alert-primary text-center mb-0">
                 <MathFormula>
                   {`\\begin{aligned}
                     M &= P_0 \\times \\frac{r(1+r)^n}{(1+r)^n-1} \\\\
                     I_t &= B_t \\times r \\\\
                     Principal_t &= M - I_t \\\\
                     P_0 &: \\text{original loan amount} \\\\
-                    r &: \\text{monthly rate = annual rate / 100 / 12} \\\\
+                    r &: \\text{monthly rate} \\\\
+                      &\\quad = \\text{annual rate} / 100 / 12 \\\\
                     n &= ${payment.numberOfPayments} \\text{ monthly payments} \\\\
                     B_t &: \\text{balance at the start of month } t \\\\
-                    M &: \\text{scheduled monthly principal-and-interest payment} \\\\
+                    M &: \\text{scheduled monthly P\\&I payment} \\\\
                     I_t &: \\text{interest paid in month } t \\\\
                     Principal_t &: \\text{principal paid in month } t
                   \\end{aligned}`}

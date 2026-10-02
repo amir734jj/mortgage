@@ -1,0 +1,21 @@
+.formula-panel,
+.math-formula {
+  min-width: 0;
+}
+
+.math-formula mjx-container {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: 0.25rem;
+}
+
+@media (max-width: 575.98px) {
+  .formula-panel {
+    padding-inline: 0.75rem;
+  }
+
+  .math-formula {
+    font-size: 0.8rem;
+  }
+}

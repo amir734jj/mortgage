@@ -191,7 +191,7 @@ function App() {
               <p class="text-uppercase text-primary fw-bold small mb-2">
                 Payment breakdown
               </p>
-              <h2 class="h3 mb-2">First payment vs. last payment</h2>
+              <h2 class="h3 mb-2">Projected final payment</h2>
               <p class="text-body-secondary mb-4">
                 The scheduled payment uses your original loan terms. Your
                 current balance determines this month’s interest and principal
@@ -222,7 +222,6 @@ function App() {
                   <thead>
                     <tr>
                       <th scope="col">Component</th>
-                      <th scope="col" class="text-end">First month</th>
                       <th scope="col" class="text-end">Last month</th>
                     </tr>
                   </thead>
@@ -230,17 +229,11 @@ function App() {
                     <tr>
                       <th scope="row">Principal</th>
                       <td class="text-end">
-                        {currency.format(payment.principalPayment)}
-                      </td>
-                      <td class="text-end">
                         {currency.format(payment.lastPrincipalPayment)}
                       </td>
                     </tr>
                     <tr>
                       <th scope="row">Interest</th>
-                      <td class="text-end">
-                        {currency.format(payment.interest)}
-                      </td>
                       <td class="text-end">
                         {currency.format(payment.lastInterest)}
                       </td>
@@ -248,24 +241,17 @@ function App() {
                     <tr>
                       <th scope="row">Escrow</th>
                       <td class="text-end">{currency.format(payment.escrow)}</td>
-                      <td class="text-end">{currency.format(payment.escrow)}</td>
                     </tr>
                     <tr>
                       <th scope="row">Principal &amp; interest</th>
                       <td class="text-end fw-bold">
                         {currency.format(payment.lastPrincipalAndInterest)}
                       </td>
-                      <td class="text-end fw-bold">
-                        {currency.format(payment.principalAndInterest)}
-                      </td>
                     </tr>
                     <tr class="table-primary">
                       <th scope="row">Total payment</th>
                       <td class="text-end fw-bold">
                         {currency.format(payment.lastTotalPayment)}
-                      </td>
-                      <td class="text-end fw-bold">
-                        {currency.format(payment.totalPayment)}
                       </td>
                     </tr>
                   </tbody>
@@ -288,7 +274,18 @@ function App() {
             <div class="col-lg-8">
               <div class="alert alert-primary text-center mb-0 overflow-auto">
                 <MathFormula>
-                  {`M = P_0 \\times \\frac{r(1+r)^{${payment.numberOfPayments}}}{(1+r)^{${payment.numberOfPayments}}-1}, \\quad I_t = B_t \\times r, \\quad Principal_t = M - I_t`}
+                  {`\\begin{aligned}
+                    M &= P_0 \\times \\frac{r(1+r)^n}{(1+r)^n-1} \\\\
+                    I_t &= B_t \\times r \\\\
+                    Principal_t &= M - I_t \\\\
+                    P_0 &: \\text{original loan amount} \\\\
+                    r &: \\text{monthly rate = annual rate / 100 / 12} \\\\
+                    n &= ${payment.numberOfPayments} \\text{ monthly payments} \\\\
+                    B_t &: \\text{balance at the start of month } t \\\\
+                    M &: \\text{scheduled monthly principal-and-interest payment} \\\\
+                    I_t &: \\text{interest paid in month } t \\\\
+                    Principal_t &: \\text{principal paid in month } t
+                  \\end{aligned}`}
                 </MathFormula>
               </div>
             </div>

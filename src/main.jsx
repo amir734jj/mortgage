@@ -231,27 +231,21 @@ function App() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
+                    <tr class="table-primary">
                       <th scope="row">Principal</th>
                       <td class="text-end">
                         {currency.format(payment.principalPayment)}
                       </td>
                     </tr>
-                    <tr>
+                    <tr class="table-warning">
                       <th scope="row">Interest</th>
                       <td class="text-end">
                         {currency.format(payment.interest)}
                       </td>
                     </tr>
-                    <tr>
+                    <tr class="table-info">
                       <th scope="row">Escrow</th>
                       <td class="text-end">{currency.format(payment.escrow)}</td>
-                    </tr>
-                    <tr>
-                      <th scope="row">Principal &amp; interest</th>
-                      <td class="text-end fw-bold">
-                        {currency.format(payment.principalAndInterest)}
-                      </td>
                     </tr>
                     <tr class="table-primary">
                       <th scope="row">Total payment</th>

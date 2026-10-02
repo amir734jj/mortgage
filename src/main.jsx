@@ -191,39 +191,33 @@ function App() {
               <p class="text-uppercase text-primary fw-bold small mb-2">
                 Payment breakdown
               </p>
-              <h2 class="h3 mb-2">Projected final payment</h2>
+              <h2 class="h3 mb-2">Regular monthly payment</h2>
               <p class="text-body-secondary mb-4">
-                The chart and table show the projected final installment,
-                including its principal, interest, and escrow portions.
+                Principal and interest are calculated from your current
+                balance; escrow is added to show your regular monthly amount.
               </p>
 
               <div
                 class="progress mb-4"
                 role="img"
-                aria-label="Projected final payment distribution"
+                aria-label="Regular monthly payment distribution"
               >
                 <div
                   class="progress-bar bg-primary"
                   style={{
-                    width: shareOfTotal(
-                      payment.lastPrincipalPayment,
-                      payment.lastTotalPayment,
-                    ),
+                    width: shareOfTotal(payment.principalPayment, payment.totalPayment),
                   }}
                 />
                 <div
                   class="progress-bar bg-warning"
                   style={{
-                    width: shareOfTotal(
-                      payment.lastInterest,
-                      payment.lastTotalPayment,
-                    ),
+                    width: shareOfTotal(payment.interest, payment.totalPayment),
                   }}
                 />
                 <div
                   class="progress-bar bg-info"
                   style={{
-                    width: shareOfTotal(payment.escrow, payment.lastTotalPayment),
+                    width: shareOfTotal(payment.escrow, payment.totalPayment),
                   }}
                 />
               </div>
@@ -233,20 +227,20 @@ function App() {
                   <thead>
                     <tr>
                       <th scope="col">Component</th>
-                      <th scope="col" class="text-end">Last month</th>
+                      <th scope="col" class="text-end">Monthly amount</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
                       <th scope="row">Principal</th>
                       <td class="text-end">
-                        {currency.format(payment.lastPrincipalPayment)}
+                        {currency.format(payment.principalPayment)}
                       </td>
                     </tr>
                     <tr>
                       <th scope="row">Interest</th>
                       <td class="text-end">
-                        {currency.format(payment.lastInterest)}
+                        {currency.format(payment.interest)}
                       </td>
                     </tr>
                     <tr>
@@ -256,13 +250,13 @@ function App() {
                     <tr>
                       <th scope="row">Principal &amp; interest</th>
                       <td class="text-end fw-bold">
-                        {currency.format(payment.lastPrincipalAndInterest)}
+                        {currency.format(payment.principalAndInterest)}
                       </td>
                     </tr>
                     <tr class="table-primary">
                       <th scope="row">Total payment</th>
                       <td class="text-end fw-bold">
-                        {currency.format(payment.lastTotalPayment)}
+                        {currency.format(payment.totalPayment)}
                       </td>
                     </tr>
                   </tbody>

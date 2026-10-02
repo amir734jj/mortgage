@@ -1,5 +1,5 @@
 import { render } from "preact";
-import { useMemo, useState } from "preact/hooks";
+import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import { calculateMortgage } from "./mortgage.js";
@@ -9,6 +9,36 @@ const currency = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
 });
+
+function MathFormula({ children }) {
+  const container = useRef(null);
+
+  useEffect(() => {
+    const typeset = () => {
+      const mathJax = window.MathJax;
+
+      if (!container.current || !mathJax?.typesetPromise) {
+        return;
+      }
+
+      mathJax.typesetClear?.([container.current]);
+      container.current.textContent = `\\[${children}\\]`;
+      mathJax.typesetPromise([container.current]);
+    };
+
+    if (container.current) {
+      container.current.textContent = `\\[${children}\\]`;
+    }
+
+    const script = document.getElementById("MathJax-script");
+    script?.addEventListener("load", typeset);
+    typeset();
+
+    return () => script?.removeEventListener("load", typeset);
+  }, [children]);
+
+  return <div ref={container} />;
+}
 
 function NumberField({ label, value, onInput, prefix, suffix, min = 0, step }) {
   return (
@@ -238,20 +268,12 @@ function App() {
               </p>
               <h2 class="h3 mb-0">The fixed-rate formula</h2>
             </div>
-            <div class="col-lg-4">
-              <div class="alert alert-primary text-center mb-0">
-                M = P × [r(1 + r)<sup>n</sup>] ÷ [(1 + r)<sup>n</sup> − 1]
+            <div class="col-lg-8">
+              <div class="alert alert-primary text-center mb-0 overflow-auto">
+                <MathFormula>
+                  {`M = P \\times \\frac{r(1+r)^{${payment.numberOfPayments}}}{(1+r)^{${payment.numberOfPayments}}-1}`}
+                </MathFormula>
               </div>
-            </div>
-            <div class="col-lg-4">
-              <p class="text-body-secondary mb-0">
-                For a {years}-year term, this estimate uses{" "}
-                <strong>{payment.numberOfPayments} monthly payments</strong>.
-                Over the full loan, estimated interest totals{" "}
-                <strong>{currency.format(payment.totalInterest)}</strong>.
-                Taxes, insurance, fees, and lender rounding may change the
-                actual payment.
-              </p>
             </div>
           </div>
         </div>

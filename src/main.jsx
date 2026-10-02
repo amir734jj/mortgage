@@ -92,9 +92,9 @@ function App() {
     ],
   );
 
-  const shareOfTotal = (amount) =>
-    payment.totalPayment > 0
-      ? `${((amount / payment.totalPayment) * 100).toFixed(1)}%`
+  const shareOfTotal = (amount, total) =>
+    total > 0
+      ? `${((amount / total) * 100).toFixed(1)}%`
       : "0.0%";
 
   return (
@@ -193,27 +193,38 @@ function App() {
               </p>
               <h2 class="h3 mb-2">Projected final payment</h2>
               <p class="text-body-secondary mb-4">
-                The scheduled payment uses your original loan terms. Your
-                current balance determines this month’s interest and principal
-                split.
+                The chart and table show the projected final installment,
+                including its principal, interest, and escrow portions.
               </p>
 
               <div
                 class="progress mb-4"
                 role="img"
-                aria-label="First payment distribution"
+                aria-label="Projected final payment distribution"
               >
                 <div
                   class="progress-bar bg-primary"
-                  style={{ width: shareOfTotal(payment.principalPayment) }}
+                  style={{
+                    width: shareOfTotal(
+                      payment.lastPrincipalPayment,
+                      payment.lastTotalPayment,
+                    ),
+                  }}
                 />
                 <div
                   class="progress-bar bg-warning"
-                  style={{ width: shareOfTotal(payment.interest) }}
+                  style={{
+                    width: shareOfTotal(
+                      payment.lastInterest,
+                      payment.lastTotalPayment,
+                    ),
+                  }}
                 />
                 <div
                   class="progress-bar bg-info"
-                  style={{ width: shareOfTotal(payment.escrow) }}
+                  style={{
+                    width: shareOfTotal(payment.escrow, payment.lastTotalPayment),
+                  }}
                 />
               </div>
 
